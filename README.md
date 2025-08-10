@@ -51,13 +51,13 @@ If you find errors, feel free to open an "Issue" on GitHub.
 # Interactive/Normal installation
 The recommended way to use this script.
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/guldkage/Pterodactyl-Installer/main/installer.sh)
+bash <(curl -s https://raw.githubusercontent.com/NavitaBurhan/ptrodactyl-installer/main/installer.sh)
 ```
 
 ### Raspbian
 Only for raspbian users. They might need a extra < in the beginning.
 ```bash
-bash < <(curl -s https://raw.githubusercontent.com/guldkage/Pterodactyl-Installer/main/installer.sh)
+bash < <(curl -s https://raw.githubusercontent.com/NavitaBurhan/ptrodactyl-installer/main/installer.sh)
 ```
 
 # Autoinstall / Developer Installation
@@ -83,5 +83,5 @@ You must be precise when using this script. 1 typo and everything can go wrong.
 It also needs to be run on a fresh version of Ubuntu or Debian.
 
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/guldkage/Pterodactyl-Installer/main/autoinstall.sh)  <fqdn> <ssl> <email> <username> <firstname <lastname> <password> <wings>
+bash <(curl -s https://raw.githubusercontent.com/NavitaBurhan/ptrodactyl-installer/main/autoinstall.sh)  <fqdn> <ssl> <email> <username> <firstname <lastname> <password> <wings>
 ```
