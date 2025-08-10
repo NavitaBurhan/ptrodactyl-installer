@@ -1,85 +1,36 @@
 #!/bin/bash
 #!/usr/bin/env bash
 
+# =========================[ PTERODACTYL INSTALLER THEME ]=========================
+THEME_COLOR="\e[38;5;45m"
+THEME_RESET="\e[0m"
+THEME_BOLD="\e[1m"
+THEME_HEADER="
+${THEME_COLOR}${THEME_BOLD}
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║      ██████╗ ████████╗███████╗██████╗  ██████╗  █████╗ ██████╗ ██╗         ║
+║      ██╔══██╗╚══██╔══╝██╔════╝██╔══██╗██╔═══██╗██╔══██╗██╔══██╗██║         ║
+║      ██████╔╝   ██║   █████╗  ██████╔╝██║   ██║███████║██████╔╝██║         ║
+║      ██╔═══╝    ██║   ██╔══╝  ██╔══██╗██║   ██║██╔══██║██╔══██╗██║         ║
+║      ██║        ██║   ███████╗██║  ██║╚██████╔╝██║  ██║██║  ██║███████╗    ║
+║      ╚═╝        ╚═╝   ╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝    ║
+║                                                                            ║
+║        Pterodactyl Installer @ v3.0 - by Malthe K <me@malthe.cc>           ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+${THEME_RESET}
+"
+
 ########################################################################
 #                                                                      #
 #            Pterodactyl Installer, Updater, Remover and More          #
 #            Copyright 2025, Malthe K, <me@malthe.cc> hej              # 
-#  https://github.com/NavitaBurhan/ptrodactyl-installer/blob/main/LICENSE #
+#  https://github.com/guldkage/NavitaBurhan/ptrodactyl-installer/blob/main/LICENSE #
 #                                                                      #
 #  This script is not associated with the official Pterodactyl Panel.  #
 #  You may not remove this line                                        #
 #                                                                      #
 ########################################################################
-
-### COLORS & BANNERS ###
-RED='\033[1;31m'
-GREEN='\033[1;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[1;34m'
-CYAN='\033[1;36m'
-MAGENTA='\033[1;35m'
-RESET='\033[0m'
-BOLD='\033[1m'
-DIM='\033[2m'
-UNDERLINE='\033[4m'
-
-# Gradient banner (animated)
-animated_banner() {
-    local lines=(
-        "████████████████████████████████████████████████████████████████████"
-        "█▄─▄▄─█─▄▄─█▄─▄▄─█─▄▄─█─▄▄─█▄─▄▄─█▄─▄▄─█▄─▄▄─█▄─▄▄─█▄─▄▄─█▄─▄▄─█"
-        "██─▄█▀█─██─██─▄█▀█─██─█─██─██─▄█▀██─▄█▀██─▄█▀██─▄█▀██─▄█▀██─▄█▀█"
-        "▀▄▄▄▄▄▀▄▄▄▄▀▄▄▄▄▄▀▄▄▄▄▀▄▄▄▄▀▄▄▄▄▄▀▄▄▄▄▄▀▄▄▄▄▄▀▄▄▄▄▄▀▄▄▄▄▄▀▄▄▄▄▄▀"
-    )
-    local colors=("$CYAN" "$BLUE" "$MAGENTA" "$CYAN")
-    for i in "${!lines[@]}"; do
-        echo -e "${colors[$i]}${BOLD}${lines[$i]}${RESET}"
-        sleep 0.07
-    done
-    echo -e "${YELLOW}${BOLD}        Pterodactyl Installer v3.0 by Malthe K <me@malthe.cc>${RESET}"
-    echo -e "${DIM}────────────────────────────────────────────────────────────────────${RESET}"
-}
-
-section() {
-    echo -e "${MAGENTA}${BOLD}╭──────────────────────────────────────────────╮${RESET}"
-    echo -e "${MAGENTA}${BOLD}│ ${UNDERLINE}$1${RESET}${MAGENTA}${BOLD}"
-    echo -e "${MAGENTA}${BOLD}╰──────────────────────────────────────────────╯${RESET}"
-}
-
-success() {
-    echo -e "${GREEN}🟢 $1${RESET}"
-}
-
-info() {
-    echo -e "${CYAN}🔷 $1${RESET}"
-}
-
-warn() {
-    echo -e "${YELLOW}⚠️ $1${RESET}"
-}
-
-error() {
-    echo -e "${RED}🛑 $1${RESET}"
-}
-
-pause() {
-    echo -en "${DIM}Press any key to continue...${RESET}"
-    read -n 1 -s
-    echo ""
-}
-
-spinner() {
-    local pid=$!
-    local spin='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
-    local i=0
-    while kill -0 $pid 2>/dev/null; do
-        i=$(( (i+1) %10 ))
-        printf "\r${CYAN}${BOLD}⏳ %s${RESET}" "${spin:$i:1}"
-        sleep .1
-    done
-    printf "\r${GREEN}${BOLD}✔ Done!${RESET}\n"
-}
 
 ### VARIABLES ###
 
@@ -93,13 +44,14 @@ WINGSNOQUESTIONS=false
 function trap_ctrlc ()
 {
     echo ""
-    error "Bye!"
+    echo "Bye!"
     exit 2
 }
 trap "trap_ctrlc" 2
 
 warning(){
-    warn "$1"
+    echo -e '\e[31m'"$1"'\e[0m';
+
 }
 
 ### CHECKS ###
@@ -133,56 +85,70 @@ fi
 
 send_summary() {
     clear
-    animated_banner
+    clear
     if [ -d "/var/www/pterodactyl" ]; then
-        warn "🚨 WARNING: Pterodactyl is already installed. This script will fail!"
-    fi
-    section "📝 Panel Installation Summary"
-    echo -e "${BOLD}🌐 Panel URL:${RESET} $FQDN"
-    echo -e "${BOLD}🖥️ Webserver:${RESET} $WEBSERVER"
-    echo -e "${BOLD}📧 Email:${RESET} $EMAIL"
-    echo -e "${BOLD}🔒 SSL:${RESET} $SSLSTATUS"
-    echo -e "${BOLD}🔑 Custom SSL:${RESET} $CUSTOMSSL"
-    echo -e "${BOLD}👤 Username:${RESET} $USERNAME"
-    echo -e "${BOLD}🧑 First name:${RESET} $FIRSTNAME"
-    echo -e "${BOLD}👨‍💼 Last name:${RESET} $LASTNAME"
-    if [ -n "$USERPASSWORD" ]; then
-        echo -e "${BOLD}🔑 Password:${RESET} $(printf "%0.s*" $(seq 1 ${#USERPASSWORD}))"
-    else
-        echo -e "${BOLD}🔑 Password:${RESET}"
+        warning "[!] WARNING: Pterodactyl is already installed. This script will fail!"
     fi
     echo ""
-    pause
+    echo "[!] Summary:"
+    echo "    Panel URL: $FQDN"
+    echo "    Webserver: $WEBSERVER"
+    echo "    Email: $EMAIL"
+    echo "    SSL: $SSLSTATUS"
+    echo "    Custom SSL: $CUSTOMSSL"
+    echo "    Username: $USERNAME"
+    echo "    First name: $FIRSTNAME"
+    echo "    Last name: $LASTNAME"
+    if [ -n "$USERPASSWORD" ]; then
+    echo "    Password: $(printf "%0.s*" $(seq 1 ${#USERPASSWORD}))"
+    else
+        echo "    Password:"
+    fi
+    echo ""
+}
+
+panel(){
+    echo ""
+    echo "[!] Before installation, we need some information."
+    echo ""
+    panel_webserver
 }
 
 finish(){
     clear
-    animated_banner
-    section "🎉 Installation Summary"
-    echo -e "${BOLD}🌐 Panel URL:${RESET} $appurl"
-    echo -e "${BOLD}🖥️ Webserver:${RESET} $WEBSERVER"
-    echo -e "${BOLD}📧 Email:${RESET} $EMAIL"
-    echo -e "${BOLD}🔒 SSL:${RESET} $SSLSTATUS"
-    echo -e "${BOLD}👤 Username:${RESET} $USERNAME"
-    echo -e "${BOLD}🧑 First name:${RESET} $FIRSTNAME"
-    echo -e "${BOLD}👨‍💼 Last name:${RESET} $LASTNAME"
-    echo -e "${BOLD}🔑 Password:${RESET} $(printf "%0.s*" $(seq 1 ${#USERPASSWORD}))"
-    echo -e "${BOLD}🗄️ Database password:${RESET} $DBPASSWORD"
-    echo -e "${BOLD}🗄️ Password for Database Host:${RESET} $DBPASSWORDHOST"
-    echo -e "${CYAN}📄 These credentials have been saved in panel_credentials.txt${RESET}\n"
-    pause
-    info "Checking if the panel is accessible..."
+    cd
+    echo -e "Summary of the installation\n\nPanel URL: $FQDN\nWebserver: $WEBSERVER\nUsername: $USERNAME\nEmail: $EMAIL\nFirst name: $FIRSTNAME\nLast name: $LASTNAME\nPassword: $(printf "%0.s*" $(seq 1 ${#USERPASSWORD}))\nDatabase password: $DBPASSWORD\nPassword for Database Host: $DBPASSWORDHOST" >> panel_credentials.txt
+
+    echo "[!] Installation of Pterodactyl Panel done"
+    echo ""
+    echo "    Summary of the installation" 
+    echo "    Panel URL: $appurl"
+    echo "    Webserver: $WEBSERVER"
+    echo "    Email: $EMAIL"
+    echo "    SSL: $SSLSTATUS"
+    echo "    Username: $USERNAME"
+    echo "    First name: $FIRSTNAME"
+    echo "    Last name: $LASTNAME"
+    echo "    Password: $(printf "%0.s*" $(seq 1 ${#USERPASSWORD}))"
+    echo "" 
+    echo "    Database password: $DBPASSWORD"
+    echo "    Password for Database Host: $DBPASSWORDHOST"
+    echo "" 
+    echo "    These credentials have been saved in panel_credentials.txt"
+    echo ""
+
+    echo "[!] Checking if the panel is accessible..."
     HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" "$appurl")
 
     if [ "$HTTP_STATUS" == "502" ]; then
-        warn "Bad Gateway detected! Restarting php8.3-fpm..."
+        echo "[!] Bad Gateway detected! Restarting php8.3-fpm..."
         systemctl restart php8.3-fpm
         sleep 5
         HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" "$appurl")
     fi
 
     if [[ "$HTTP_STATUS" != "200" ]]; then
-        warn "Panel is still not accessible. Restarting webserver..."
+        echo "[!] Panel is still not accessible. Restarting webserver..."
         if [[ "$WEBSERVER" == "NGINX" ]]; then
             systemctl restart nginx
         elif [[ "$WEBSERVER" == "Apache" ]]; then
@@ -193,9 +159,9 @@ finish(){
     fi
 
     if [[ "$HTTP_STATUS" == "200" ]]; then
-        success "Panel is accessible!"
+        echo "[✔] Panel is accessible!"
     else
-        error "Panel is still not accessible. Please check logs"
+        echo "[✖] Panel is still not accessible. Please check logs"
         if [[ "$WEBSERVER" == "NGINX" ]]; then
             journalctl -u nginx --no-pager | tail -n 10
         elif [[ "$WEBSERVER" == "Apache" ]]; then
@@ -225,10 +191,10 @@ finish(){
 
 panel_webserver(){
     send_summary
-    section "🌐 Select Webserver"
-    echo -e "${BOLD}[1]${RESET} NGINX ${GREEN}(recommended)${RESET}"
-    echo -e "${BOLD}[2]${RESET} Apache"
-    echo -e "${CYAN}Input 1-2${RESET}"
+    echo "[!] Select Webserver"
+    echo "    (1) NGINX (recommended)"
+    echo "    (2) Apache"
+    echo "    Input 1-2"
     read -r option
     case $option in
         1 ) option=1
@@ -264,7 +230,7 @@ panel_conf() {
 
     chown -R www-data:www-data /var/www/pterodactyl/*
 
-    curl -o /etc/systemd/system/pteroq.service https://raw.githubusercontent.com/NavitaBurhan/ptrodactyl-installer/main/configs/pteroq.service
+    curl -o /etc/systemd/system/pteroq.service https://raw.githubusercontent.com/guldkage/NavitaBurhan/ptrodactyl-installer/main/configs/pteroq.service
     (crontab -l ; echo "* * * * * php /var/www/pterodactyl/artisan schedule:run >> /dev/null 2>&1") | crontab -
     systemctl enable --now redis-server
     systemctl enable --now pteroq.service
@@ -290,7 +256,7 @@ panel_conf() {
     if [ "$SSLSTATUS" == "true" ]; then
         if [ "$WEBSERVER" == "NGINX" ]; then
             rm -rf /etc/nginx/sites-enabled/default
-            curl -o /etc/nginx/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/NavitaBurhan/ptrodactyl-installer/main/configs/pterodactyl-nginx-ssl.conf
+            curl -o /etc/nginx/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/guldkage/NavitaBurhan/ptrodactyl-installer/main/configs/pterodactyl-nginx-ssl.conf
             if [ "$CUSTOMSSL" == true ]; then
                 sed -i -e "s@ssl_certificate /etc/letsencrypt/live/<domain>/fullchain.pem;@ssl_certificate ${CERTIFICATEPATH};@g" /etc/nginx/sites-enabled/pterodactyl.conf
                 sed -i -e "s@ssl_certificate_key /etc/letsencrypt/live/<domain>/privkey.pem;@ssl_certificate_key ${PRIVATEKEYPATH};@g" /etc/nginx/sites-enabled/pterodactyl.conf
@@ -300,7 +266,7 @@ panel_conf() {
             systemctl stop apache2
             certbot certonly --standalone -d $FQDN --staple-ocsp --no-eff-email -m $EMAIL --agree-tos
             a2dissite 000-default.conf && systemctl reload apache2
-            curl -o /etc/apache2/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/NavitaBurhan/ptrodactyl-installer/main/configs/pterodactyl-apache-ssl.conf
+            curl -o /etc/apache2/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/guldkage/NavitaBurhan/ptrodactyl-installer/main/configs/pterodactyl-apache-ssl.conf
             if [ "$CUSTOMSSL" == true ]; then
                 sed -i -e "s@SSLCertificateFile /etc/letsencrypt/live/<domain>/fullchain.pem@SSLCertificateFile ${CERTIFICATEPATH}@g" /etc/nginx/sites-enabled/pterodactyl.conf
                 sed -i -e "s@SSLCertificateKeyFile /etc/letsencrypt/live/<domain>/privkey.pem@SSLCertificateKeyFile ${PRIVATEKEYPATH}@g" /etc/nginx/sites-enabled/pterodactyl.conf
@@ -311,11 +277,11 @@ panel_conf() {
     else
         if [ "$WEBSERVER" == "NGINX" ]; then
             rm -rf /etc/nginx/sites-enabled/default
-            curl -o /etc/nginx/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/NavitaBurhan/ptrodactyl-installer/main/configs/pterodactyl-nginx.conf
+            curl -o /etc/nginx/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/guldkage/NavitaBurhan/ptrodactyl-installer/main/configs/pterodactyl-nginx.conf
             sed -i -e "s@<domain>@${FQDN}@g" /etc/nginx/sites-enabled/pterodactyl.conf
         elif [ "$WEBSERVER" == "Apache" ]; then
             a2dissite 000-default.conf && systemctl reload apache2
-            curl -o /etc/apache2/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/NavitaBurhan/ptrodactyl-installer/main/configs/pterodactyl-apache.conf
+            curl -o /etc/apache2/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/guldkage/NavitaBurhan/ptrodactyl-installer/main/configs/pterodactyl-apache.conf
             sed -i -e "s@<domain>@${FQDN}@g" /etc/apache2/sites-enabled/pterodactyl.conf
             a2enmod rewrite
         fi
@@ -432,21 +398,22 @@ panel_install(){
 
 panel_summary(){
     clear
-    animated_banner
     DBPASSWORD=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1`
     DBPASSWORDHOST=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1`
-    section "📝 Panel Installation Summary"
-    echo -e "${BOLD}🌐 Panel URL:${RESET} $FQDN"
-    echo -e "${BOLD}🖥️ Webserver:${RESET} $WEBSERVER"
-    echo -e "${BOLD}🔒 SSL:${RESET} $SSLSTATUS"
-    echo -e "${BOLD}👤 Username:${RESET} $USERNAME"
-    echo -e "${BOLD}🧑 First name:${RESET} $FIRSTNAME"
-    echo -e "${BOLD}👨‍💼 Last name:${RESET} $LASTNAME"
-    echo -e "${BOLD}🔑 Password:${RESET} $(printf "%0.s*" $(seq 1 ${#USERPASSWORD}))"
     echo ""
-    echo -e "${CYAN}📄 These credentials will be saved in panel_credentials.txt${RESET}"
+    echo "[!] Summary:"
+    echo "    Panel URL: $FQDN"
+    echo "    Webserver: $WEBSERVER"
+    echo "    SSL: $SSLSTATUS"
+    echo "    Username: $USERNAME"
+    echo "    First name: $FIRSTNAME"
+    echo "    Last name: $LASTNAME"
+    echo "    Password: $(printf "%0.s*" $(seq 1 ${#USERPASSWORD}))"
     echo ""
-    echo -e "${YELLOW}❓ Do you want to start the installation? (Y/N)${RESET}"
+    echo "    These credentials will be saved in a file called" 
+    echo "    panel_credentials.txt in your current directory"
+    echo "" 
+    echo "    Do you want to start the installation? (Y/N)" 
     read -r PANEL_INSTALLATION
 
     if [[ "$PANEL_INSTALLATION" =~ [Yy] ]]; then
@@ -466,7 +433,7 @@ panel_input(){
     local hide_input="$4"
     
     while :; do
-        echo -e "${MAGENTA}📝 $prompt${RESET}"
+        echo "$prompt"
         
         if [ "$hide_input" == "true" ]; then
             local input=""
@@ -503,12 +470,13 @@ panel_input(){
 
 panel_fqdn(){
     send_summary
-    section "🌐 Enter FQDN"
-    echo -e "${YELLOW}Example: panel.yourdomain.dk${RESET}"
+    echo "[!] Please enter FQDN. You will access the Panel with this."
+    echo "[!] Example: panel.yourdomain.dk."
     read -r FQDN
-    [ -z "$FQDN" ] && error "FQDN can't be empty." && return 1
+    [ -z "$FQDN" ] && echo "FQDN can't be empty." && return 1
 
-    info "🔍 Fetching public IP..."
+    echo ""
+    echo "[+] Fetching public IP..."
     
     IP_CHECK=$(curl -s ipinfo.io/ip -4)
     IPV6_CHECK=$(curl -s v6.ipinfo.io/ip -6)
@@ -524,9 +492,9 @@ panel_fqdn(){
     DOMAIN_PANELCHECK=$(dig +short "$FQDN" | head -n 1)
 
     if [ -z "$DOMAIN_PANELCHECK" ]; then
-        warn "❌ Could not resolve $FQDN to an IP."
-        warn "If you run this locally and only using IP, ignore this."
-        warn "Proceeding anyway in 10 seconds... Press CTRL+C to cancel."
+        echo "[!] Could not resolve $FQDN to an IP."
+        echo "[!] If you run this locally and only using IP, ignore this."
+        echo "[!] Proceeding anyway in 10 seconds... Press CTRL+C to cancel."
         sleep 10
     fi
 
@@ -538,14 +506,15 @@ panel_fqdn(){
     ORG_CHECK=$(curl -s "https://ipinfo.io/$DOMAIN_PANELCHECK/json" | grep -o '"org":.*' | cut -d '"' -f4)
 
     if [[ "$ORG_CHECK" == *"Cloudflare"* ]]; then
-        warn "☁️ Your FQDN is behind Cloudflare Proxy."
-        warn "This is fine if you know what you are doing."
-        warn "If you are using Cloudflare Flexible SSL, please set TRUSTED_PROXIES in .env after installation."
-        warn "Proceeding anyway in 10 seconds... Press CTRL+C to cancel."
+        echo "[!] Your FQDN is behind Cloudflare Proxy."
+        echo "[!] This is fine if you know what you are doing."
+        echo "[!] If you are using Cloudflare Flexible SSL, please set TRUSTED_PROXIES in .env after installation."
+        echo "[!]"
+        echo "[!] Proceeding anyway in 10 seconds... Press CTRL+C to cancel."
         sleep 10
         CLOUDFLARE_MATCHED=true
     else
-        info "✅ Your FQDN is NOT behind Cloudflare."
+        echo "[+] Your FQDN is NOT behind Cloudflare."
     fi
 
     panel_ssl
@@ -553,10 +522,10 @@ panel_fqdn(){
 
 panel_ssltype() {
     send_summary
-    section "🔒 Select SSL Type"
-    echo -e "${BOLD}[1]${RESET} Let's Encrypt ${GREEN}(recommended)${RESET}"
-    echo -e "${BOLD}[2]${RESET} Custom"
-    echo -e "${CYAN}Input 1-2${RESET}"
+    echo "[!] Select SSL type"
+    echo "    (1) Let's Encrypt (recommended)"
+    echo "    (2) Custom"
+    echo "    Input 1-2"
     read -r option
     case $option in
         1) 
@@ -606,9 +575,8 @@ panel_validate_ssl_files() {
 
 panel_ssl(){
     send_summary
-    section "🔒 SSL Setup"
-    echo -e "${YELLOW}❓ Do you want to use SSL for your Panel? This is recommended. (Y/N)${RESET}"
-    echo -e "${CYAN}SSL is recommended for every panel.${RESET}"
+    echo "[!] Do you want to use SSL for your Panel? This is recommended. (Y/N)"
+    echo "[!] SSL is recommended for every panel."
     while :; do
         read -r SSL_CONFIRM
         if [[ "$SSL_CONFIRM" =~ [Yy] ]]; then
@@ -629,9 +597,9 @@ panel_ssl(){
 panel_email(){
     send_summary
     if [ "$SSLSTATUS" = "true" ]; then
-        panel_input "${YELLOW}📧 Please enter your email. It will be shared with Lets Encrypt (if you selected that as SSL type) and used to set up this Panel.${RESET}" "EMAIL" 50
+        panel_input "[!] Please enter your email. It will be shared with Lets Encrypt (if you selected that as SSL type) and used to set up this Panel." "EMAIL" 50
     else
-        panel_input "${YELLOW}📧 Please enter your email. It will be used to set up this Panel.${RESET}" "EMAIL" 50
+        panel_input "[!] Please enter your email. It will be used to set up this Panel." "EMAIL" 50
     fi
     panel_admin_setup
 }
@@ -640,19 +608,19 @@ panel_admin_setup(){
     send_summary
     
     declare -A fields=(
-        ["FIRSTNAME"]="🧑 Enter your first name"
-        ["LASTNAME"]="👨‍💼 Enter your last name"
-        ["USERNAME"]="👤 Enter a username for your admin account"
+        ["FIRSTNAME"]="🔹 Enter your first name"
+        ["LASTNAME"]="🔹 Enter your last name"
+        ["USERNAME"]="🔹 Enter a username for your admin account"
         ["USERPASSWORD"]="🔒 Enter a secure password"
     )
     i=1
     total=${#fields[@]}
 
     for key in "${!fields[@]}"; do
-        echo -ne "${CYAN}  [${i}/${total}] ${fields[$key]}...${RESET}\n"
+        echo -ne "  [${i}/${total}] ${fields[$key]}...\n"
         panel_input "${fields[$key]}" "$key" 16 $([ "$key" = "USERPASSWORD" ] && echo "true")
         ((i++))
-        echo -e "  ${GREEN}✅ Done${RESET}\n"
+        echo -e "  ✅ \033[1;32mDone\033[0m\n"
         sleep 0.3
     done
     panel_summary
@@ -716,7 +684,7 @@ wings_full(){
             fi
 
         curl -L -o /usr/local/bin/wings "https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_$([[ "$(uname -m)" == "x86_64" ]] && echo "amd64" || echo "arm64")"
-        curl -o /etc/systemd/system/wings.service https://raw.githubusercontent.com/NavitaBurhan/ptrodactyl-installer/main/configs/wings.service
+        curl -o /etc/systemd/system/wings.service https://raw.githubusercontent.com/guldkage/NavitaBurhan/ptrodactyl-installer/main/configs/wings.service
         chmod u+x /usr/local/bin/wings
         clear
         echo ""
@@ -807,7 +775,7 @@ phpmyadminweb() {
 
     if [ "$PHPMYADMIN_SSLSTATUS" = "true" ]; then
         rm -rf /etc/nginx/sites-enabled/default
-        curl -o /etc/nginx/sites-enabled/phpmyadmin.conf https://raw.githubusercontent.com/NavitaBurhan/ptrodactyl-installer/main/configs/phpmyadmin-ssl.conf || { echo "Error downloading NGINX config"; exit 1; }
+        curl -o /etc/nginx/sites-enabled/phpmyadmin.conf https://raw.githubusercontent.com/guldkage/NavitaBurhan/ptrodactyl-installer/main/configs/phpmyadmin-ssl.conf || { echo "Error downloading NGINX config"; exit 1; }
         sed -i -e "s@<domain>@${PHPMYADMIN_FQDN}@g" /etc/nginx/sites-enabled/phpmyadmin.conf || { echo "Error editing NGINX config"; exit 1; }
         systemctl stop nginx || { echo "Error stopping NGINX"; exit 1; }
         certbot certonly --standalone -d $PHPMYADMIN_FQDN --staple-ocsp --no-eff-email -m $PHPMYADMIN_EMAIL --agree-tos || { echo "Error with Certbot"; exit 1; }
@@ -816,7 +784,7 @@ phpmyadminweb() {
     fi
 
     if [ "$PHPMYADMIN_SSLSTATUS" = "false" ]; then
-        curl -o /etc/nginx/sites-enabled/phpmyadmin.conf https://raw.githubusercontent.com/NavitaBurhan/ptrodactyl-installer/main/configs/phpmyadmin.conf || { echo "Error downloading NGINX config"; exit 1; }
+        curl -o /etc/nginx/sites-enabled/phpmyadmin.conf https://raw.githubusercontent.com/guldkage/NavitaBurhan/ptrodactyl-installer/main/configs/phpmyadmin.conf || { echo "Error downloading NGINX config"; exit 1; }
         sed -i -e "s@<domain>@${PHPMYADMIN_FQDN}@g" /etc/nginx/sites-enabled/phpmyadmin.conf || { echo "Error editing NGINX config"; exit 1; }
         systemctl restart nginx || { echo "Error restarting NGINX"; exit 1; }
         phpmyadmin_finish
@@ -887,17 +855,18 @@ phpmyadmininstall() {
 
 phpmyadmin_summary() {
     clear
-    banner
-    section "PHPMyAdmin Installation Summary"
-    echo -e "${BOLD}PHPMyAdmin URL:${RESET} $PHPMYADMIN_FQDN"
-    echo -e "${BOLD}Preselected webserver:${RESET} NGINX"
-    echo -e "${BOLD}SSL:${RESET} $PHPMYADMIN_SSLSTATUS"
-    echo -e "${BOLD}User:${RESET} $PHPMYADMIN_USER_LOCAL"
-    echo -e "${BOLD}Email:${RESET} $PHPMYADMIN_EMAIL"
     echo ""
-    echo -e "${CYAN}These credentials have been saved in phpmyadmin_credentials.txt${RESET}"
+    echo "[!] Summary:"
+    echo "    PHPMyAdmin URL: $PHPMYADMIN_FQDN"
+    echo "    Preselected webserver: NGINX"
+    echo "    SSL: $PHPMYADMIN_SSLSTATUS"
+    echo "    User: $PHPMYADMIN_USER_LOCAL"
+    echo "    Email: $PHPMYADMIN_EMAIL"
     echo ""
-    echo -e "${YELLOW}Do you want to start the installation? (Y/N)${RESET}"
+    echo "    These credentials have been saved in a file called"
+    echo "    phpmyadmin_credentials.txt in your current directory"
+    echo ""
+    echo "    Do you want to start the installation? (Y/N)"
     read -r PHPMYADMIN_INSTALLATION
 
     if [[ "$PHPMYADMIN_INSTALLATION" =~ [Yy] ]]; then
@@ -912,16 +881,17 @@ phpmyadmin_summary() {
 
 send_phpmyadmin_summary() {
     clear
-    banner
+    echo ""
     if [ -d "/var/www/phpmyadmin" ]; then
-        warn "[!] WARNING: There seems to already be an installation of PHPMyAdmin installed! This script will fail!"
+        echo "[!] WARNING: There seems to already be an installation of PHPMyAdmin installed! This script will fail!"
     fi
-    section "PHPMyAdmin Installation Summary"
-    echo -e "${BOLD}PHPMyAdmin URL:${RESET} $PHPMYADMIN_FQDN"
-    echo -e "${BOLD}Preselected webserver:${RESET} NGINX"
-    echo -e "${BOLD}SSL:${RESET} $PHPMYADMIN_SSLSTATUS"
-    echo -e "${BOLD}User:${RESET} $PHPMYADMIN_USER_LOCAL"
-    echo -e "${BOLD}Email:${RESET} $PHPMYADMIN_EMAIL"
+    echo ""
+    echo "[!] Summary:"
+    echo "    PHPMyAdmin URL: $PHPMYADMIN_FQDN"
+    echo "    Preselected webserver: NGINX"
+    echo "    SSL: $PHPMYADMIN_SSLSTATUS"
+    echo "    User: $PHPMYADMIN_USER_LOCAL"
+    echo "    Email: $PHPMYADMIN_EMAIL"
     echo ""
 }
 
@@ -1102,7 +1072,7 @@ switch(){
         echo "    The script is now changing your Pterodactyl Domain."
         echo "      This may take a couple seconds for the SSL part, as SSL certificates are being generated."
         rm /etc/nginx/sites-enabled/pterodactyl.conf
-        curl -o /etc/nginx/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/NavitaBurhan/ptrodactyl-installer/main/configs/pterodactyl-nginx-ssl.conf || exit || warning "Pterodactyl Panel not installed!"
+        curl -o /etc/nginx/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/guldkage/NavitaBurhan/ptrodactyl-installer/main/configs/pterodactyl-nginx-ssl.conf || exit || warning "Pterodactyl Panel not installed!"
         sed -i -e "s@<domain>@${DOMAINSWITCH}@g" /etc/nginx/sites-enabled/pterodactyl.conf
         systemctl stop nginx
         certbot certonly --standalone -d $DOMAINSWITCH --staple-ocsp --no-eff-email -m $EMAILSWITCHDOMAINS --agree-tos || exit || warning "Errors accured."
@@ -1123,7 +1093,7 @@ switch(){
     if  [ "$SSLSWITCH" =  "false" ]; then
         echo "[!] Switching your domain.. This wont take long!"
         rm /etc/nginx/sites-enabled/pterodactyl.conf || exit || echo "An error occurred. Could not delete file." || exit
-        curl -o /etc/nginx/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/NavitaBurhan/ptrodactyl-installer/main/configs/pterodactyl-nginx.conf || exit || warning "Pterodactyl Panel not installed!"
+        curl -o /etc/nginx/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/guldkage/NavitaBurhan/ptrodactyl-installer/main/configs/pterodactyl-nginx.conf || exit || warning "Pterodactyl Panel not installed!"
         sed -i -e "s@<domain>@${DOMAINSWITCH}@g" /etc/nginx/sites-enabled/pterodactyl.conf
         systemctl restart nginx
         echo ""
@@ -1191,20 +1161,19 @@ oscheck(){
     fi
 }
 
-### Options ###z
+### Options ###
 
 options(){
-    animated_banner
-    section "🚀 Main Menu"
-    echo -e "${BOLD}[1]${RESET} 🛠️ Install Panel"
-    echo -e "${BOLD}[2]${RESET} 🛠️ Install Wings"
-    echo -e "${BOLD}[3]${RESET} 🛠️ Panel & Wings"
-    echo -e "${BOLD}[4]${RESET} 🛠️ Install PHPMyAdmin"
-    echo -e "${BOLD}[5]${RESET} 🗑️ Remove PHPMyAdmin"
-    echo -e "${BOLD}[6]${RESET} 🗑️ Remove Wings"
-    echo -e "${BOLD}[7]${RESET} 🗑️ Remove Panel"
-    echo -e "${BOLD}[8]${RESET} 🔄 Switch Pterodactyl Domain"
-    echo -e "${CYAN}Input 1-8${RESET}"
+    echo "What would you like to do?"
+    echo "[1] Install Panel"
+    echo "[2] Install Wings"
+    echo "[3] Panel & Wings"
+    echo "[4] Install PHPMyAdmin"
+    echo "[5] Remove PHPMyAdmin"
+    echo "[6] Remove Wings"
+    echo "[7] Remove Panel"
+    echo "[8] Switch Pterodactyl Domain"
+    echo "Input 1-8"
     read -r option
     case $option in
         1 ) option=1
@@ -1243,12 +1212,16 @@ options(){
 ### Start ###
 
 clear
-animated_banner
-section "👋 Welcome"
-echo -e "${YELLOW}🔒 Security notice:${RESET}"
-echo -e "${CYAN}This script connects to ipinfo.io to check IP address organization.${RESET}"
 echo ""
-echo -e "${RED}🛑 This script is not associated with the official Pterodactyl Panel.${RESET}"
+echo "-------------------------------------------------------------------"
 echo ""
-pause
+echo "Pterodactyl Installer @ v3.0"
+echo "Copyright 2025, Malthe K, <me@malthe.cc>"
+echo "https://github.com/guldkage/NavitaBurhan/ptrodactyl-installer"
+echo ""
+echo "Security notice:"
+echo "This script connects to ipinfo.io to check IP address organization."
+echo ""
+echo "This script is not associated with the official Pterodactyl Panel."
+echo ""
 oscheck
